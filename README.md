@@ -5,11 +5,8 @@ CHANGES TO ADD?
 Add /data/builds volume to the tc server?
 
 
-
-# This guide assumes you have a good enough understanding of git to already be using GitHub or GitLab to manage your repo
-
-PROJECT SET UP
-# Before you set up the server, you need to do the following:
+# Before Starting
+- This guide assumes you have a good enough understanding of git to already be using GitHub or GitLab to manage your repo
 - Ensure your git repo is a Unity project
 - Add the AutomatedBuilder.cs script (in the build-scripts folder of this repo) to your project in Unity in the Assets/Editor director, and commit it to master.
 - Update the list of scenes in your build in the AutomatedBuilder.cs script. (The line with "buildPlayerOptions.scenes" in it)
@@ -17,73 +14,89 @@ PROJECT SET UP
 
 
 
-SERVER SET UP
-
-Install Ubuntu Server or Desktop
-
+# Initial Server Set Up
+Install Ubuntu Server or Desktop (this was written using 18.04 desktop)
+Run the following:
+```
 sudo apt-get update
 sudo apt install docker.io ssh python -y
+```
 
-# Add your user to the docker group, then log out and log back in. This makes it so you don't have to use sudo for everything.
+Add your user to the docker group, then log out and log back in. This makes it so you don't have to use sudo for everything.
+```
 sudo usermod -a -G docker $USER
+```
 
-
-# Pull the teamcity-server image (https://hub.docker.com/r/jetbrains/teamcity-server/)
+Pull the teamcity-server image ([documentation](https://hub.docker.com/r/jetbrains/teamcity-server/)):
+```
 docker pull jetbrains/teamcity-server
+```
 
-# Make the directories for the server to use (If you change these paths, change them in the run command as well)
+Make the directories for the server to use (If you change these paths, change them in the run command as well):
+```
 mkdir teamcity
 mkdir teamcity/data
 mkdir teamcity/logs
 mkdir teamcity/builds
+```
 
-# Run the server
+Run the server:
+```
 docker run -d --name teamcity-server-instance  \
     -v ~/teamcity/data:/data/teamcity_server/datadir \
     -v ~/teamcity/logs:/opt/teamcity/logs  \
     -p 8111:8111 \
     jetbrains/teamcity-server
+```
+
+Go to the server in it's WebUI (If you don't know the ip of your server run 'ifconfig'). If your server's IP is 192.168.0.20, then go to http://192.168.0.20:8111 in a web browser.
+- Click "Proceed"
+- Leave "Internal (HSQLDB)" selected and click "Proceed"
+- After a pause it will ask you to accept the license agreement. Agree and Continue.
+- Create an admin account following on screen prompts.
+- (Optional) - Fill out the name and email on the page, configure your time zone, etc.
 
 
-# Go to the server in it's WebUI (If you don't know the ip of your server run 'ifconfig')
-# Example would be http://192.168.0.20:8111
+# SSH Key Configuration 
+##### Creating and getting your keys
+If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to the next section (_Add Your First Project_).
 
-Click "Proceed"
-Leave "Internal (HSQLDB)" selected and click "Proceed"
-After a pause it will ask you to accept the license agreement. Agree and Continue.
-Create an admin account following on screen prompts.
-	(Optional) - Fill out the name and email on the page, configure your time zone, etc.
+On your server run the following commands (you will be copying and pasting the output of the last two):
+```
+ssh-keygen -f ~/.ssh/tc-key -t rsa -N ''
+```
+
+There are lots of ways you could get this key off the box, if you have no idea how, this is one quick way.
+```
+cd ~/.ssh
+python -m SimpleHTTPServer 8000
+```
+
+Go to "<server ip>:8000" in a browser and click both tc-key and tc-key.pub to download them. Next, hit "control + c" one or two times to stop the server. It is not a good idea to leave this command running for security reasons.
+
+##### Uploading your keys to your Team City Server
+- In the Team City WebUI go to **Administration** > **Projects**, and click **<Root project>**
+- In the left panel select **SSH Keys** (If it's not visible, click **show more**)
+- Click the **Upload SSH Key** button
+- Give the key a name like "**unity-tc-server**" or something
+- Click **Choose File** and navigate to **tc-key** (**NOT** tc-key.pub)
 
 
-SSH Key Configuration 
-	- If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, otherwise it's an optional alternative to using your username and password for Git
-	- On your server run the following commands (you will be copying and pasting the output of the last two):
-		ssh-keygen -f ~/.ssh/tc-key -t rsa -N ''
-	- There are lots of ways you could get this key off the box, if you have no idea how, this is one quick way.
-		cd ~/.ssh
-		python -m SimpleHTTPServer 8000
-		# visit "<server ip>:8000" in a browser and click both tc-key and tc-key.pub to download them
-		# hit "control + c" one or two times to stop the server (note: under no circumstances ever would it be a good idea to leave that running exposing your keys)
+If you are using **GitLab**:
+- Click your profile picture in the top right, then **Settings**
+- In the left panel click **SSH Keys**
+- Open "tc-key.pub" in a text editor, and copy + paste the full contents out. (It should start with "ssh-rsa" and end with "<server username>@<server hostname>")
+- Enter a **Title** like "unity-tc-server" or something and click **Add key**
 
-	- In the Team City WebUI go to Administration > Projects, and click "<Root project>" 
-	- In the left panel select "SSH Keys" (If it's not visible, click "show more")
-	- Click the "Upload SSH Key" button
-	- Give the key a name like "unity-tc-server" or something
-	- Click "Choose File" and navigate to "tc-key" (NOT tc-key.pub)
 
-	# If you are using GitLab
-	- Click your profile picture in the top right, then Settings
-	- In the left panel click "SSH Keys"
-	- Open "tc-key.pub" in a text editor, and copy + paste the full contents out. (It should start with ssh-rsa and end with <server username>@<server hostname>)
-	- Enter a Title like "unity-tc-server" or something and click "Add key"
+If you are using **GitHub**:
+- Click your profile picture in the top right, then **Settings**
+- In the left panel click **SSH and GPG Keys**, then click **New SSH Key**
+- Open "tc-key.pub" in a text editor, and copy + paste the full contents into the **Key** field. (It should start with "ssh-rsa" and end with "<server username>@<server hostname>")
+- Enter a Title like "unity-tc-server" or something and click **Add SSH key**
 
-	# If you are using GitHub
-	- Click your profile picture in the top right, then Settings
-	- In the left panel click "SSH and GPG Keys", then click "New SSH Key"
-	- Open "tc-key.pub" in a text editor, and copy + paste the full contents into the "Key" field. (It should start with ssh-rsa and end with <server username>@<server hostname>)
-	- Enter a Title like "unity-tc-server" or something and click "Add SSH key"
 
-Add Your First Project (Repo)
+# Add Your First Project (Repo) to Team City
 	- Click the "Projects" tab in the top-left corner, then "Create Project"
 	- In your repo click the "Clone" button then copy the link that starts with "git@" and paste it in the "Repository URL" field
 	- If you did not set up SSH Keys, and the repo is not a public repo, enter your git Username and Password
@@ -115,3 +128,4 @@ BUILD AND RUN THE AGENT
 	git clone https://github.com/phearbot/unity-teamcity-docker
 	cd unity-teamcity-docker/unity-tc-agent/
 	docker build . --tag unity-tc-agent-2018.3:latest
+
