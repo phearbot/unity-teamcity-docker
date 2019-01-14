@@ -14,7 +14,7 @@ Add /data/builds volume to the tc server?
 
 
 
-# Initial Server Set Up
+# 1. Initial Server Set Up
 Install Ubuntu Server or Desktop (this was written using 18.04 desktop)
 Run the following:
 ```
@@ -57,9 +57,9 @@ Go to the server in it's WebUI (If you don't know the ip of your server run 'ifc
 - (Optional) - Fill out the name and email on the page, configure your time zone, etc.
 
 
-# SSH Key Configuration 
+# 2. SSH Key Configuration 
 ##### Creating and getting your keys
-If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to the next section (_Add Your First Project_).
+If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to section 3 (Setting Up Your First  Project (Repo) in Team City).
 
 On your server run the following commands (you will be copying and pasting the output of the last two):
 ```
@@ -72,7 +72,7 @@ cd ~/.ssh
 python -m SimpleHTTPServer 8000
 ```
 
-Go to "<server ip>:8000" in a browser and click both tc-key and tc-key.pub to download them. Next, hit "control + c" one or two times to stop the server. It is not a good idea to leave this command running for security reasons.
+Go to "\<server ip>:8000" in a browser and click both tc-key and tc-key.pub to download them. Next, hit "control + c" one or two times to stop the server. It is not a good idea to leave this command running for security reasons.
 
 ##### Uploading your keys to your Team City Server
 - In the Team City WebUI go to **Administration** > **Projects**, and click **<Root project>**
@@ -96,31 +96,32 @@ If you are using **GitHub**:
 - Enter a Title like "unity-tc-server" or something and click **Add SSH key**
 
 
-# Add Your First Project (Repo) to Team City
-	- Click the "Projects" tab in the top-left corner, then "Create Project"
-	- In your repo click the "Clone" button then copy the link that starts with "git@" and paste it in the "Repository URL" field
-	- If you did not set up SSH Keys, and the repo is not a public repo, enter your git Username and Password
-	- Hit "Proceed", wait for it to come back successfully then hit "Proceed" again.
+# 3. Setting Up Your First  Project (Repo) in Team City
+##### Create the Project
+- Click the **Projects** tab in the top-left corner, then **Create Project**
+- In your repo click the **Clone** button then copy the link that starts with "git@" and paste it in the **Repository URL** field
+- If you did not set up SSH Keys, and the repo is not a public repo, enter your git username and password
+- Hit **Proceed**, wait for it to come back successfully then hit **Proceed** again
 
-Add the Unity Plugin (https://plugins.jetbrains.com/plugin/11453-unity-support)
-	- Go to the link above and download the latest build (it will be a .zip file)
-	- In the Team City WebUI, go to Administration > Plugins List
-	- Click "Upload plugin zip", choose the file you just downloaded, and click "Upload plugin zip"
-	- Click "Enable uploaded plugins", then "Enable" on the pop-up dialog
+##### Add the Unity Plugin ([documentation](https://plugins.jetbrains.com/plugin/11453-unity-support))
+- Go to the link above and download the latest build (it will be a .zip file)
+- In the Team City WebUI, go to **Administration** > **Plugins List**
+- Click **Upload plugin zip**, choose the file you just downloaded, and click **Upload plugin zip**
+- Click **Enable uploaded plugins**, then **Enable** on the pop-up dialog
 
-Configure the Build Steps
-	- Go back to Projects > <Your Project Name> > Edit Project Settings and click the "Edit" button in the Build Configurations section
-	- In Artifact Paths, enter the same path in your AutomatedBuilder.cs "buildPlayerOptions.locationPathName" line. (Add multiple paths if you are doing multiple builds -- e.g. uncommenting the Android Build)
-	- Click the "Save" button
-	- Click "Build Steps" in the left panel
-	- Click "Auto-detect build steps"
-	- Check the box next to "Unity" and click "Use selected"
-	- Click "Edit" to the right of step 1, which is titled "1. Unity"
-	- Click the magic wand next to the "Execute method" box, it should auto detect "AutomatedBuild.Build", which you select by clicking 
-	- Check "Do not initialize the graphics device"
-	- Click the "Save" button
+##### Configure the Build Steps
+- Go back to **Projects** > **Your Project Name** > **Edit Project Settings** and click the **Edit** button in the **Build Configurations** section
+- In Artifact Paths, enter the same path in your AutomatedBuilder.cs "buildPlayerOptions.locationPathName" line. (Add multiple paths if you are doing multiple builds -- e.g. uncommenting the Android Build)
+- Click the "Save" button
+- Click "Build Steps" in the left panel
+- Click "Auto-detect build steps"
+- Check the box next to "Unity" and click "Use selected"
+- Click "Edit" to the right of step 1, which is titled "1. Unity"
+- Click the magic wand next to the "Execute method" box, it should auto detect "AutomatedBuild.Build", which you select by clicking 
+- Check "Do not initialize the graphics device"
+- Click the "Save" button
 
-BUILD AND RUN THE AGENT
+# BUILD AND RUN THE AGENT
 	# The following commands make the directory, pull the repo down, and begin the building of the agent
 	# Note: Building the agent involves downloading and installing Unity, and can take a considerable amount of time
 	mkdir ~/git
