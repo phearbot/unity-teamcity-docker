@@ -59,7 +59,7 @@ Go to the server in it's WebUI (If you don't know the ip of your server run 'ifc
 
 # 2. SSH Key Configuration 
 ##### Creating and getting your keys
-If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to [section 3](#Setting-Up-Your-First-Project-in-Team-City).
+If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to [section 3](#setting-up-your-first-project-in-team-city).
 
 On your server run the following commands (you will be copying and pasting the output of the last two):
 ```
