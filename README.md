@@ -59,7 +59,7 @@ Go to the server in it's WebUI (If you don't know the ip of your server run 'ifc
 
 # 2. SSH Key Configuration 
 ##### Creating and getting your keys
-If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to section 3 (Setting Up Your First  Project (Repo) in Team City).
+If your repo is private and you use MFA on your Git acccount, you need to use SSH keys, **otherwise this is an optional alternative** to using your username and password for Git. If you are skipping this, go to [section 3](#Setting-Up-Your-First-Project-in-Team-City).
 
 On your server run the following commands (you will be copying and pasting the output of the last two):
 ```
@@ -96,7 +96,7 @@ If you are using **GitHub**:
 - Enter a Title like "unity-tc-server" or something and click **Add SSH key**
 
 
-# 3. Setting Up Your First  Project (Repo) in Team City
+# 3. Setting Up Your First Project in Team City
 ##### Create the Project
 - Click the **Projects** tab in the top-left corner, then **Create Project**
 - In your repo click the **Clone** button then copy the link that starts with "git@" and paste it in the **Repository URL** field
@@ -111,22 +111,24 @@ If you are using **GitHub**:
 
 ##### Configure the Build Steps
 - Go back to **Projects** > **Your Project Name** > **Edit Project Settings** and click the **Edit** button in the **Build Configurations** section
-- In Artifact Paths, enter the same path in your AutomatedBuilder.cs "buildPlayerOptions.locationPathName" line. (Add multiple paths if you are doing multiple builds -- e.g. uncommenting the Android Build)
-- Click the "Save" button
-- Click "Build Steps" in the left panel
-- Click "Auto-detect build steps"
-- Check the box next to "Unity" and click "Use selected"
-- Click "Edit" to the right of step 1, which is titled "1. Unity"
-- Click the magic wand next to the "Execute method" box, it should auto detect "AutomatedBuild.Build", which you select by clicking 
-- Check "Do not initialize the graphics device"
-- Click the "Save" button
+- In **Artifact Paths**, enter the same path in your AutomatedBuilder.cs "buildPlayerOptions.locationPathName" line. (Add multiple paths if you are doing multiple builds -- e.g. uncommenting the Android Build)
+- Click the **Save** button
+- Click **Build Steps** in the left panel
+- Click **Auto-detect build steps**
+- Check the box next to **Unity" and click "Use selected**
+- Click **Edit** to the right of step 1, which is titled "1. Unity"
+- Click the magic wand next to the **Execute method** box, it should auto detect "AutomatedBuild.Build", which you select by clicking
+- Check **Do not initialize the graphics device**
+- Click the **Save** button
 
-# BUILD AND RUN THE AGENT
-	# The following commands make the directory, pull the repo down, and begin the building of the agent
-	# Note: Building the agent involves downloading and installing Unity, and can take a considerable amount of time
-	mkdir ~/git
-	cd ~/git
-	git clone https://github.com/phearbot/unity-teamcity-docker
-	cd unity-teamcity-docker/unity-tc-agent/
-	docker build . --tag unity-tc-agent-2018.3:latest
+# 4. Build and Run the Agent
+The following commands make the directory, pull the repo down, and begin the building of the agent. Be aware that building the agent involves downloading and installing Unity, and can take a considerable amount of time/bandwidth.
+```
+mkdir ~/git
+cd ~/git
+git clone https://github.com/phearbot/unity-teamcity-docker
+cd unity-teamcity-docker/unity-tc-agent/
+docker build . --tag unity-tc-agent-2018.3:latest
+```
+
 
